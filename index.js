@@ -7,11 +7,11 @@ import postRoutes from './routes/posts.js';
 
 const app = express();
 
-app.use('/posts', postRoutes);
-
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(cors());
+
+app.use('/posts', postRoutes);
 
 const CONNECTION_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PW}@cluster0.sawlf.mongodb.net/whiteRabbit?retryWrites=true&w=majority`;
 const PORT = process.env.PORT || 5000;
