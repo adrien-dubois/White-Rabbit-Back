@@ -37,3 +37,13 @@ export const updatePost = async (req, res) =>{
 
   res.json(updatedPost);
 }
+
+export const deletePost = async (req, res) => {
+  const { id } = req.params;
+
+  if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send("Il n'y a pas de tip avec cet ID");
+
+  await PostMessage.findByIdAndRemove(id);
+
+  res.json({ message: "Tip supprimé!" });
+}
