@@ -15,7 +15,7 @@ export const createPost = async (req, res) => {
   // Get datas
   const post = req.body;
   // Then transform into mongoose schema
-  const newPost = PostMessage(post);
+  const newPost = PostMessage({ ...post, creator: req.userId, createdAt: new Date().toISOString() });
 
   try {
     // save it
