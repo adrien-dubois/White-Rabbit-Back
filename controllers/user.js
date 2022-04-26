@@ -25,5 +25,23 @@ export const signin = async (req, res) => {
 }
 
 export const signup = async (req, res) => {
+  const { email, password, confirmPassword, name } = req.body;
 
+  try {
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) return res.status(400).json({ message: 'Cette adresse mail a déjà un compte inscrit.' });
+
+    if ( password !== confirmPassword ) return res.status(400).json({ message: "Les mots de passe ne sont pas identiques." });
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const result = await User.create({ email, password: hashedPassword, name });
+
+    const token = jwt.sign({ email: existingUser.email, id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(200).json({ result, token });
+  } catch (e) {
+    res.status(500).json({ message: "Quelque chose n'a pas fonctionné." });
+  }
 }

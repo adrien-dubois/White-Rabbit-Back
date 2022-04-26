@@ -50,13 +50,27 @@ export const deletePost = async (req, res) => {
 
 export const likePost = async (req, res) => {
   const { id } = req.params;
-
+  // First we check if user is connected
+  if (!req.userId) return res.json({ message: "Vous devez être connecté pour liker" });
+  // Then check if post exists
   if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send("Il n'y a pas de tip avec cet ID");
-
+  // Find the post which is asked by th user to like
   const post = await PostMessage.findById(id);
+  // Checking if user has already like this post
+  const index = post.likes.findIndex((id) => id === String(req.userId));
+  // And finally add like to the post
+
+  if ( index === -1 ){
+    //like the post
+    post.likes.push(req.userId)
+  } else {
+    //dislike the post
+    post.likes = post.likes.filter((id) => id !== String(req.userId));
+  }
+
   const updatedPost = await PostMessage.findByIdAndUpdate(
     id,
-    { likeCount: post.likeCount + 1 },
+    post,
     { new: true }
   );
 
